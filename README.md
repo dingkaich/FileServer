@@ -16,4 +16,5 @@ git push -u origin master
 You can initialize this repository with code from a Subversion, Mercurial, or TFS project.
 
 就是简单画了一个图：
+![image](https://github.com/dingkaich/FileServer/blob/master/fileserver_overview.png)
 
