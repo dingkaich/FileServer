@@ -1,6 +1,14 @@
 # FileServer
-天天打印print觉得学习意义不大，自己给自己搞个小工程玩一玩
-第一版代码没有放到这里来，放在https://github.com/dingkaich/MyGoLearning/tree/master/src/myfileserver
+curl 上传：
+curl -F "uploadfile=@dingkai.log" http://localhost:6060/uploadfile
+
+curl下载:
+curl -o http://localhost:6060/viewfile/dingkai.log
+
+
+http页面操作：
+ http://localhost:6060
+ 
 
 
 就是简单画了一个图：
