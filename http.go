@@ -21,7 +21,7 @@ import (
 
 func Deafult(res http.ResponseWriter, req *http.Request) {
 	log.Println("Deafult", req.URL.String())
-	log.Println("head", req.Header)
+	// log.Println("head", req.Header)
 	if req.URL.Path == "" || req.URL.Path == "/" {
 		Index(res, req)
 	} else {
@@ -62,6 +62,8 @@ func AuthAccount(res http.ResponseWriter, req *http.Request) error {
 }
 
 func Index(res http.ResponseWriter, req *http.Request) {
+	Login(res, req)
+	return
 	if AuthAccount(res, req) != nil {
 		log.Println("AuthAccount failed")
 		return
@@ -276,7 +278,7 @@ func UploadFile(res http.ResponseWriter, req *http.Request) {
 	return
 }
 
-func Myhttpmain(localconf *config_parm) {
+func myhttpmain(localconf *config_parm) {
 
 	if localconf == nil {
 		log.Println("localconf  is nil")

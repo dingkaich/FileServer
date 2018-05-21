@@ -8,14 +8,20 @@ a. 校验okay: 返回cookie:
 	}
 b. 校验不通过，返回校验失败
 
-sessionid 生成规则: linux时间戳 + md5(用户名+密码)
+sessionid 生成规则:md5sum(linux时间戳 + md5(用户名+密码))
 每次校验 seesionid中的linux时间戳+ lifetime ,如果过期了；要求重新设置登录；返回超期登录。
 
 */
 
 package main
 
-import "net/http"
+import (
+	"crypto/md5"
+	"encoding/base64"
+	"fmt"
+	"net/http"
+	"time"
+)
 
 type AuthUser struct {
 	Username string
@@ -29,12 +35,33 @@ const (
 	cookietimeout = 2 //cookie超时，让重新登录
 )
 
-func NewAuthUser() *AuthUser {
-	return &AuthUser{
-		Username: "",
-		Passwd:   "",
-		Cookies:  nil,
+var getpaswd func(username string) []byte
+
+func RegistGetPasswdFunc(fun func(username string) []byte) {
+	getpaswd = fun
+}
+
+var sessionmap map[string]*AuthUser
+
+func init() {
+	getpaswd = nil
+	sessionmap = make(map[string]*AuthUser, 32)
+}
+
+func NewAuthUser(username string) *AuthUser {
+
+	if username == "" {
+		return &AuthUser{
+			Username: "",
+			Passwd:   "",
+			Cookies:  nil,
+		}
+	} else {
+		if a, ok := sessionmap[username]; ok {
+			return a
+		}
 	}
+	return nil
 }
 
 func (a *AuthUser) Auth() int {
@@ -46,9 +73,49 @@ func (a *AuthUser) Auth() int {
 }
 
 func (a *AuthUser) authuser() int {
-	return authfailed
+	//对用户名和密码做解密操作
+	if a.Username == "" || a.Passwd == "" || getpaswd == nil {
+		return authfailed
+	}
+
+	if string(getpaswd(a.Username)) != a.Passwd {
+		return authfailed
+	}
+
+	//设置cookie
+	a.setcookie()
+
+	sessionmap[a.Username] = a
+	return authokay
+}
+
+func (a *AuthUser) setcookie() {
+	nowtime := time.Now()
+	sessionstring := fmt.Sprintf("%d%s%s", nowtime.Unix(), a.Username, a.Passwd)
+	sessionbyte := md5.New().Sum([]byte(sessionstring))
+	sessionid := base64.StdEncoding.EncodeToString(sessionbyte)
+	a.Cookies = &http.Cookie{
+		Name:    fmt.Sprintf("%d", nowtime.Unix()),
+		Value:   sessionid,
+		Expires: time.Now().Add(time.Hour * 1),
+	}
+
 }
 
 func (a *AuthUser) authCookie() int {
+	if a.Cookies == nil {
+		return authfailed
+	}
+
+	if a.Cookies.Name != a.Username {
+		return authfailed
+	}
+
+	sessionstring := fmt.Sprintf("%d%s%s", a.Cookies.Value, a.Username, a.Passwd)
+
+	if sessionstring != a.Cookies.Value {
+		return a.authuser()
+	}
+
 	return authfailed
 }
