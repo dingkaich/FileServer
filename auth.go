@@ -10,7 +10,6 @@ b. 校验不通过，返回校验失败
 
 sessionid 生成规则:md5sum(linux时间戳 + md5(用户名+密码))
 每次校验 seesionid中的linux时间戳+ lifetime ,如果过期了；要求重新设置登录；返回超期登录。
-
 */
 
 package main

@@ -44,10 +44,10 @@ type Userinfo struct {
 
 var Dbsqlite *sql.DB = nil
 
-var DSN = "./myfileserver/sqlite/filesever.db"
+var DSN = "./sqlite/filesever.db"
 
 // var DSN = "/root/dingkai/filesever.db"
-var SQLfile = "./myfileserver/sqlite/sqlite3.sql"
+var SQLfile = "./sqlite/sqlite3.sql"
 
 var rwlock *sync.RWMutex
 

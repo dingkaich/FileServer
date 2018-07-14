@@ -1,6 +1,7 @@
 package main
 
 import (
+	"FileServer/httpsvr"
 	mysql "FileServer/sqlite"
 	"bytes"
 	"crypto/md5"
@@ -62,8 +63,8 @@ func AuthAccount(res http.ResponseWriter, req *http.Request) error {
 }
 
 func Index(res http.ResponseWriter, req *http.Request) {
-	Login(res, req)
-	return
+	//Login(res, req)
+	//return
 	if AuthAccount(res, req) != nil {
 		log.Println("AuthAccount failed")
 		return
@@ -279,6 +280,8 @@ func UploadFile(res http.ResponseWriter, req *http.Request) {
 }
 
 func myhttpmain(localconf *config_parm) {
+	//注册获取用户名和密码的地方
+	httpsvr.RegistGetUserInfo(mysql.QueryUserInfo)
 
 	if localconf == nil {
 		log.Println("localconf  is nil")
@@ -287,7 +290,8 @@ func myhttpmain(localconf *config_parm) {
 	fmt.Println("currentdir=", os.Args[0])
 	Mux := http.NewServeMux()
 	//根目录是主页
-	Mux.HandleFunc("/", Deafult)
+	Mux.HandleFunc("/", httpsvr.Loginobj.ObjHanlde)
+	Mux.HandleFunc("/login/", httpsvr.Loginobj.ObjHanlde)
 	Mux.HandleFunc("/viewfile", ViewFile)
 	Mux.HandleFunc("/viewfile/", ViewFile)
 	Mux.HandleFunc("/uploadfile", UploadFile)
