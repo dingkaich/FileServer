@@ -14,6 +14,7 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"path/filepath"
 	"strings"
@@ -280,6 +281,11 @@ func UploadFile(res http.ResponseWriter, req *http.Request) {
 }
 
 func myhttpmain(localconf *config_parm) {
+
+	go func() {
+		log.Println(http.ListenAndServe("localhost:8080", nil))
+	}()
+
 	//注册获取用户名和密码的地方
 	httpsvr.RegistGetUserInfo(mysql.QueryUserInfo)
 
@@ -308,4 +314,5 @@ func myhttpmain(localconf *config_parm) {
 	if err != nil {
 		log.Println(err)
 	}
+
 }
