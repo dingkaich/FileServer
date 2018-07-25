@@ -45,6 +45,15 @@ func init() {
 }
 
 func (h *loginObj) Get(res http.ResponseWriter, req *http.Request) {
+
+	err, username := CookiesAuth(res, req)
+	if err != nil || username == "" {
+		log.Println("no cookie")
+	} else {
+		http.Redirect(res, req, "/index", http.StatusSeeOther)
+		return
+	}
+
 	url := req.URL.String()
 	if url != "/" {
 		url = strings.TrimSuffix(url, "/")
