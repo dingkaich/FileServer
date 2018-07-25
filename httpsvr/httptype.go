@@ -28,16 +28,22 @@ func (h *HTTPObj) RegistObj(urlname, fullfilename string) {
 }
 
 //func (h *HTTPObj) ObjHanlde(res http.ResponseWriter, req *http.Request) {
+//	//hh := *h
+//	vaue, ok := h.(HTTPHandle)
+//	if !ok {
+//		return
+//	}
+//
 //	switch req.Method {
 //	case http.MethodPost:
-//		h.Post(res, req)
+//		vaue.Post(res, req)
 //	case http.MethodGet:
-//		h.Get(res, req)
+//		vaue.Get(res, req)
 //	case http.MethodHead:
-//		h.Head(res, req)
+//		vaue.Head(res, req)
 //	case http.MethodDelete:
-//		h.Delete(res, req)
+//		vaue.Delete(res, req)
 //	case http.MethodPut:
-//		h.Put(res, req)
+//		vaue.Put(res, req)
 //	}
 //}

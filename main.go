@@ -3,6 +3,7 @@ package main
 import (
 	mysql "FileServer/sqlite"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 )
 
@@ -14,7 +15,7 @@ type config_parm struct {
 }
 
 func loadconfig() *config_parm {
-	var conf_bean config_parm
+	conf_bean := &config_parm{}
 	data, err := ioutil.ReadFile("config.json")
 	if err != nil {
 		goto deafultval
@@ -22,10 +23,11 @@ func loadconfig() *config_parm {
 
 	err = json.Unmarshal(data, conf_bean)
 	if err != nil {
+		fmt.Println("unmarshal failed")
 		goto deafultval
 	}
 
-	return &conf_bean
+	return conf_bean
 
 deafultval:
 	return &config_parm{
@@ -42,6 +44,6 @@ var localconf *config_parm
 func main() {
 	mysql.DBinit()
 	localconf = loadconfig()
-	myhttpmain(localconf)
+	StartFilesever(localconf)
 
 }

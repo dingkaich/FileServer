@@ -130,18 +130,18 @@ func AuthUsrPwd(username, passwd string, cookie *http.Cookie) error {
 }
 
 //平时登录时携带的cookie校验
-func AuthUsrCookie(cookie *http.Cookie) error {
+func AuthUsrCookie(cookie *http.Cookie) (error, string) {
 	sessionid := cookie.Value
 	sessionRWLock.RLock()
 	defer sessionRWLock.RUnlock()
-	for _, v := range sessionmap {
+	for k, v := range sessionmap {
 		//sessionid 有效，未过期，直接返回okay
 		if v.Cookies.Value == sessionid && v.Cookies.Expires.After(time.Now()) {
-			return nil
+			return nil, k
 		}
 	}
 
-	return ErrauthCookiefailed
+	return ErrauthCookiefailed, ""
 
 }
 
@@ -155,6 +155,7 @@ func (a *AuthUser) setcookie() *http.Cookie {
 		Value:   sessionid,
 		Expires: time.Now().Add(time.Hour * 1),
 		MaxAge:  60 * 60, //过期1小时
+		Path:    "/",
 	}
 	return a.Cookies
 }
@@ -182,4 +183,29 @@ func (a *AuthUser) authCookie(cookie *http.Cookie) error {
 	}
 
 	return nil
+}
+
+//CookiesAuth 方便校验
+func CookiesAuth(res http.ResponseWriter, req *http.Request) (error, string) {
+	cookies := req.Cookies()
+	if len(cookies) == 0 {
+		return errors.New("request no cookies"), ""
+	}
+	//校验cookie
+	var username string
+	var cookieok = false
+	for _, v := range cookies {
+		err, tmpname := AuthUsrCookie(v)
+		if err == nil {
+			cookieok = true
+			username = tmpname
+		}
+	}
+
+	if !cookieok {
+		log.Println("cookie auth failed")
+		return errors.New("cookies auth failed"), ""
+	}
+
+	return nil, username
 }

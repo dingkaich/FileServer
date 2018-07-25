@@ -1,0 +1,41 @@
+<html>
+
+<head>
+    <title>{{.Username}} Upload</title>
+    <script type="text/javascript">
+        function myFunction() {
+            x = document.getElementById("demo"); // 找到元素 x.innerHTML = "Hello JavaScript!"; // 改变内容 
+            }
+    </script>
+    <style type="text/css">
+        .city {
+            float: left;
+            margin: 5px;
+            padding: 15px;
+            width: 300px;
+            height: 400px;
+            border: 1px solid black;
+        }
+
+        .xiaoziti {
+            font-family: serif;
+            font-style: italic;
+            color: red;
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body>
+    <form enctype="multipart/form-data" action="/uploadfile/{{.Username}}" method="post">
+        <fieldset>
+            <legend style="font-size: 30px">{{.Username}} 请选择要上传的文件</legend>
+            <input type="file" name="uploadfile" multiple="multiple" />
+            <input type="submit" value="upload" />
+            <br/>
+            <p class="xiaoziti">当前只能选择一个文件</p>
+        </fieldset>
+    </form>
+</body>
+
+</html>
