@@ -5,13 +5,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
 )
 
 type config_parm struct {
 	Ip       string `json:"ip"`
-	Port     string `json:"port"`
+	HttpPort string `json:"httpport"`
+	SftpPort string `json:"sftpport"`
 	Username string `json:"username"`
 	Passwd   string `json:"passwd"`
+}
+
+var default_cfg = &config_parm{
+	Ip:       "localhost",
+	HttpPort: "6060",
+	SftpPort: "20022",
+	Username: "dingkai",
+	Passwd:   "12345",
 }
 
 func loadconfig() *config_parm {
@@ -30,20 +40,28 @@ func loadconfig() *config_parm {
 	return conf_bean
 
 deafultval:
-	return &config_parm{
-		Ip:       "localhost",
-		Port:     "6060",
-		Username: "dingkai",
-		Passwd:   "12345",
-	}
+	log.Println("set by default configuration")
+	return default_cfg
 
 }
 
 var localconf *config_parm
 
+func StartFilesever(localconf *config_parm) {
+	go StartHTTP(localconf) //http
+	go StartSFTP(localconf) //sftp
+
+}
+
 func main() {
-	mysql.DBinit()
+	//1. 获取基本配置
 	localconf = loadconfig()
+
+	//2.初始化数据
+	mysql.DBinit()
+
+	//3. 启动文件服务器
 	StartFilesever(localconf)
 
+	select {}
 }

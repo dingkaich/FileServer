@@ -1,0 +1,6 @@
+package: FileServer
+import:
+- package: github.com/go-redis/redis
+  version: ^6.15.1
+- package: github.com/mattn/go-sqlite3
+  version: ^1.10.0

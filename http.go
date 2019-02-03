@@ -6,12 +6,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	// _ "net/http/pprof"
+	_ "net/http/pprof"
 	"os"
 	"time"
 )
 
-func StartFilesever(localconf *config_parm) {
+func StartHTTP(localconf *config_parm) {
 	// log.SetFlags(flag)
 	go func() {
 		log.Println(http.ListenAndServe("localhost:8080", nil))
@@ -38,7 +38,7 @@ func StartFilesever(localconf *config_parm) {
 	Mux.HandleFunc("/uploadfile/", httpsvr.UploadObject.ObjHanlde)
 
 	server := http.Server{
-		Addr:         localconf.Ip + ":" + localconf.Port,
+		Addr:         localconf.Ip + ":" + localconf.HttpPort,
 		Handler:      Mux,
 		ReadTimeout:  time.Second * 10,
 		WriteTimeout: time.Second * 20,
